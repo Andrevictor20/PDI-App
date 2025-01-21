@@ -46,7 +46,7 @@ $(function () {
     const font = "16px sans-serif";
 
     function videoDimensions(video) {
-        // Ratio of the video's intrisic dimensions
+        // Ratio of the video's intrinsic dimensions
         var videoRatio = video.videoWidth / video.videoHeight;
 
         // The width and height of the video element
@@ -98,7 +98,7 @@ $(function () {
             width: dimensions.width,
             height: dimensions.height,
             left: ($(window).width() - dimensions.width) / 2,
-            top: ($(window).height() - dimensions.height) / 2
+            top: ($(window).height - dimensions.height) / 2
         });
 
         $("body").append(canvas);
@@ -109,12 +109,21 @@ $(function () {
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+        // Contador de objetos por classe
+        const objectCount = {};
+
         predictions.forEach(function (prediction) {
             const x = prediction.bbox.x;
             const y = prediction.bbox.y;
 
             const width = prediction.bbox.width;
             const height = prediction.bbox.height;
+
+            // Incrementar o contador da classe
+            if (!objectCount[prediction.class]) {
+                objectCount[prediction.class] = 0;
+            }
+            objectCount[prediction.class] += 1;
 
             // Draw the bounding box.
             ctx.strokeStyle = prediction.color;
@@ -150,11 +159,18 @@ $(function () {
             ctx.textBaseline = "top";
             ctx.fillStyle = "#000000";
             ctx.fillText(
-                prediction.class,
+                `${prediction.class} (${objectCount[prediction.class]})`,
                 (x - width / 2) / scale + 4,
                 (y - height / 2) / scale + 1
             );
         });
+
+        // Atualizar o conteúdo do elemento #object-info
+        const objectInfo = $("#object-info");
+        objectInfo.empty();
+        for (const [key, value] of Object.entries(objectCount)) {
+            objectInfo.append(`<div>${key}: ${value}</div>`);
+        }
     };
 
     var prevTime;
