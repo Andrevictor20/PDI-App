@@ -44,18 +44,6 @@ canvas {
     left: 0;
 }
 
-body:after {
-    content: "";
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 350px;
-    height: 150px;
-    z-index: 1;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: bottom right;
-}
 
 #fps {
     position: fixed;
