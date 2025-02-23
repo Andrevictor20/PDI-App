@@ -186,7 +186,7 @@ $(function () {
             ctx.textBaseline = "top";
             ctx.fillStyle = "#000000";
             ctx.fillText(
-                `${prediction.class} (${objectCount[prediction.class]})`,
+                `${prediction.class} (${objectCount[prediction.class]} Precisão: ${Math.round(prediction.confidence*100)}%)`,
                 (x - width / 2) / scale + 4,
                 (y - height / 2) / scale + 1
             );
