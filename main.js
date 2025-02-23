@@ -124,7 +124,10 @@ $(function () {
                 objectCount[prediction.class] = 0;
             }
             objectCount[prediction.class] += 1;
+            //EXIBIÇÂO NO CONSOLE ABAIXO
             console.log(prediction.class, objectCount[prediction.class]);
+           //EXIBIÇÂO NO CONSOLE ACIMA
+
 
             // Draw the bounding box.
             ctx.strokeStyle = prediction.color;
