@@ -28,7 +28,7 @@ $(function () {
 
     const loadModelPromise = new Promise(function (resolve, reject) {
         inferEngine
-            .startWorker("poluicao-dos-mares", "11", "rf_YgMgiMtPYJPxUsDTSWDvuz9ZRXE3")
+            .startWorker("poluicao-dos-mares", "14", "rf_YgMgiMtPYJPxUsDTSWDvuz9ZRXE3")
             .then(function (id) {
                 workerId = id;
                 resolve();
