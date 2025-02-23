@@ -104,6 +104,29 @@ $(function () {
         $("body").append(canvas);
     };
 
+    // Function to get specific text for each class
+    function getClassText(objectClass) {
+        const classTextMap = {
+            'sacola': 'As sacolas plásticas representam uma parcela significativa dos 3,44 milhões de toneladas de lixo plástico que o Brasil descarta no ambiente anualmente. Esses resíduos ameaçam a vida marinha, causando asfixia e intoxicação em animais como tartarugas e peixes, além de prejudicar a flora aquática ao bloquear a luz solar e comprometer ecossistemas costeiros.',
+        
+            'calcado': 'Estima-se que cada par de calçados possa levar até 1.000 anos para se decompor. No Brasil, foram encontradas 3,6 toneladas de chinelos e sandálias de plástico e borracha nos mares e manguezais em um período de seis meses, evidenciando o impacto significativo desses resíduos nos ecossistemas marinhos.',
+        
+            'copo descartavel': 'Embora tenha havido uma redução na presença de copos descartáveis no mar brasileiro em 2020, esses itens ainda contribuem para a poluição marinha. Feitos de materiais como plástico e isopor, eles se fragmentam em microplásticos que contaminam a cadeia alimentar marinha e afetam a saúde dos ecossistemas aquáticos.',
+        
+            'garrafa de vidro': 'As garrafas de vidro, embora não liberem toxinas, podem quebrar e representar riscos físicos para a fauna marinha e banhistas. Seu descarte inadequado contribui para a poluição costeira, e o vidro pode levar milhares de anos para se decompor naturalmente, persistindo no ambiente marinho por longos períodos.',
+        
+            'garrafa plastica': 'As garrafas plásticas são uma das principais fontes de poluição dos oceanos, contribuindo para os 325 mil toneladas de plástico que o Brasil despeja no mar anualmente. Elas se degradam lentamente, liberando microplásticos que afetam a fauna marinha, com muitos animais confundindo esses fragmentos com alimento, o que pode ser fatal.',
+        
+            'lata de aluminio': 'As latas de alumínio podem levar até 200 anos para se decompor no ambiente marinho. Quando descartadas inadequadamente, elas poluem os oceanos e podem liberar metais que afetam organismos marinhos. Além disso, representam uma perda significativa de recursos que poderiam ser reciclados.',
+        
+            'papelao': 'Embora o papelão se decomponha mais rapidamente que outros materiais, seu descarte no mar pode comprometer habitats marinhos e introduzir tintas e produtos químicos na água. A presença de papelão e outros resíduos sólidos pode afetar a qualidade da água e a saúde dos ecossistemas costeiros.',
+        
+            'pneu': 'Pneus descartados no mar liberam substâncias tóxicas que afetam a fauna e a flora marinhas. Além disso, o desgaste de pneus é uma fonte significativa de microplásticos, que representam uma ameaça crescente aos ecossistemas aquáticos e à saúde humana devido à sua persistência e capacidade de acumular poluentes.'
+        };
+        
+        return classTextMap[objectClass] || 'Não encontrada ou classe indefinida.';
+    }
+
     const renderPredictions = function (predictions) {
         var scale = 1;
 
@@ -174,6 +197,7 @@ $(function () {
         objectInfo.empty();
         for (const [key, value] of Object.entries(objectCount)) {
             objectInfo.append(`<div>${key}: ${value}</div>`);
+            objectInfo.append(`<div>${getClassText(key)}</div>`);
         }
     };
 
@@ -209,5 +233,3 @@ $(function () {
             });
     };
 });
-
-
