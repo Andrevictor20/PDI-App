@@ -124,6 +124,7 @@ $(function () {
                 objectCount[prediction.class] = 0;
             }
             objectCount[prediction.class] += 1;
+            console.log(prediction.class, objectCount[prediction.class]);
 
             // Draw the bounding box.
             ctx.strokeStyle = prediction.color;
@@ -205,3 +206,5 @@ $(function () {
             });
     };
 });
+
+
