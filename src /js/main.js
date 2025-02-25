@@ -7,7 +7,7 @@ $(function () {
     const video = $("video")[0];
 
     var workerId;
-    var cameraMode = "environment"; // or "user"
+    var cameraMode = "environment"; //ou user
 
     const startVideoStreamPromise = navigator.mediaDevices
         .getUserMedia({
@@ -25,7 +25,7 @@ $(function () {
                 };
             });
         });
-
+    //Carrega o modelo do roboflow
     const loadModelPromise = new Promise(function (resolve, reject) {
         inferEngine
             .startWorker("poluicao-dos-mares", "14", "rf_YgMgiMtPYJPxUsDTSWDvuz9ZRXE3")
@@ -46,21 +46,20 @@ $(function () {
     const font = "16px sans-serif";
 
     function videoDimensions(video) {
-        // Ratio of the video's intrinsic dimensions
+        //proporção das dimensões intrínsecas do vídeo
         var videoRatio = video.videoWidth / video.videoHeight;
 
-        // The width and height of the video element
+        // A largura e altura do elemento de vídeo
         var width = video.offsetWidth,
             height = video.offsetHeight;
 
-        // The ratio of the element's width to its height
+        //A proporção entre a largura do elemento e sua altura
         var elementRatio = width / height;
 
-        // If the video element is short and wide
+        // se o elemento de vídeo for baixo e largo
         if (elementRatio > videoRatio) {
             width = height * videoRatio;
         } else {
-            // It must be tall and thin, or exactly equal to the original ratio
             height = width / videoRatio;
         }
 
@@ -104,7 +103,7 @@ $(function () {
         $("body").append(canvas);
     };
 
-    // Function to get specific text for each class
+    // Função para gerar texto específico para cada classe
     function getClassText(objectClass) {
         const classTextMap = {
             'sacola': 'As sacolas plásticas representam uma parcela significativa dos 3,44 milhões de toneladas de lixo plástico que o Brasil descarta no ambiente anualmente. Esses resíduos ameaçam a vida marinha, causando asfixia e intoxicação em animais como tartarugas e peixes, além de prejudicar a flora aquática ao bloquear a luz solar e comprometer ecossistemas costeiros.',
@@ -126,7 +125,7 @@ $(function () {
         
         return classTextMap[objectClass] || 'Não encontrada ou classe indefinida.';
     }
-
+    //renderizar previsões
     const renderPredictions = function (predictions) {
         var scale = 1;
 
@@ -152,7 +151,7 @@ $(function () {
            //EXIBIÇÂO NO CONSOLE ACIMA
 
 
-            // Draw the bounding box.
+            // Desenho da bounding box.
             ctx.strokeStyle = prediction.color;
             ctx.lineWidth = 4;
             ctx.strokeRect(
@@ -162,7 +161,7 @@ $(function () {
                 height / scale
             );
 
-            // Draw the label background.
+            // Desenho do rótulo
             ctx.fillStyle = prediction.color;
             const textWidth = ctx.measureText(prediction.class).width;
             const textHeight = parseInt(font, 10); // base 10
@@ -173,7 +172,7 @@ $(function () {
                 textHeight + 4
             );
         });
-
+        //previsões
         predictions.forEach(function (prediction) {
             const x = prediction.bbox.x;
             const y = prediction.bbox.y;
@@ -203,6 +202,7 @@ $(function () {
 
     var prevTime;
     var pastFrameTimes = [];
+    //captura dos frames em tempo real e exibição do fps
     const detectFrame = function () {
         if (!workerId) return requestAnimationFrame(detectFrame);
 
