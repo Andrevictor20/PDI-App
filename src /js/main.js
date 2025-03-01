@@ -7,7 +7,7 @@ $(function () {
     const video = $("video")[0];
 
     var workerId;
-    var cameraMode = "environment"; //ou user
+    var cameraMode = "environment"; // or "user"
 
     const startVideoStreamPromise = navigator.mediaDevices
         .getUserMedia({
@@ -25,10 +25,10 @@ $(function () {
                 };
             });
         });
-    //Carrega o modelo do roboflow
+
     const loadModelPromise = new Promise(function (resolve, reject) {
         inferEngine
-            .startWorker("poluicao-dos-mares", "14", "rf_YgMgiMtPYJPxUsDTSWDvuz9ZRXE3")
+            .startWorker("poluicao-dos-mares", "15", "rf_YgMgiMtPYJPxUsDTSWDvuz9ZRXE3")
             .then(function (id) {
                 workerId = id;
                 resolve();
@@ -46,20 +46,21 @@ $(function () {
     const font = "16px sans-serif";
 
     function videoDimensions(video) {
-        //proporção das dimensões intrínsecas do vídeo
+        // Ratio of the video's intrinsic dimensions
         var videoRatio = video.videoWidth / video.videoHeight;
 
-        // A largura e altura do elemento de vídeo
+        // The width and height of the video element
         var width = video.offsetWidth,
             height = video.offsetHeight;
 
-        //A proporção entre a largura do elemento e sua altura
+        // The ratio of the element's width to its height
         var elementRatio = width / height;
 
-        // se o elemento de vídeo for baixo e largo
+        // If the video element is short and wide
         if (elementRatio > videoRatio) {
             width = height * videoRatio;
         } else {
+            // It must be tall and thin, or exactly equal to the original ratio
             height = width / videoRatio;
         }
 
@@ -103,10 +104,10 @@ $(function () {
         $("body").append(canvas);
     };
 
-    // Função para gerar texto específico para cada classe
+    // Function to get specific text for each class
     function getClassText(objectClass) {
         const classTextMap = {
-            'sacola': 'As sacolas plásticas representam uma parcela significativa dos 3,44 milhões de toneladas de lixo plástico que o Brasil descarta no ambiente anualmente. Esses resíduos ameaçam a vida marinha, causando asfixia e intoxicação em animais como tartarugas e peixes, além de prejudicar a flora aquática ao bloquear a luz solar e comprometer ecossistemas costeiros.',
+            'sacola plastica': 'As sacolas plásticas representam uma parcela significativa dos 3,44 milhões de toneladas de lixo plástico que o Brasil descarta no ambiente anualmente. Esses resíduos ameaçam a vida marinha, causando asfixia e intoxicação em animais como tartarugas e peixes, além de prejudicar a flora aquática ao bloquear a luz solar e comprometer ecossistemas costeiros.',
         
             'calcado': 'Estima-se que cada par de calçados possa levar até 1.000 anos para se decompor. No Brasil, foram encontradas 3,6 toneladas de chinelos e sandálias de plástico e borracha nos mares e manguezais em um período de seis meses, evidenciando o impacto significativo desses resíduos nos ecossistemas marinhos.',
         
@@ -125,7 +126,7 @@ $(function () {
         
         return classTextMap[objectClass] || 'Não encontrada ou classe indefinida.';
     }
-    //renderizar previsões
+
     const renderPredictions = function (predictions) {
         var scale = 1;
 
@@ -151,7 +152,7 @@ $(function () {
            //EXIBIÇÂO NO CONSOLE ACIMA
 
 
-            // Desenho da bounding box.
+            // Draw the bounding box.
             ctx.strokeStyle = prediction.color;
             ctx.lineWidth = 4;
             ctx.strokeRect(
@@ -161,7 +162,7 @@ $(function () {
                 height / scale
             );
 
-            // Desenho do rótulo
+            // Draw the label background.
             ctx.fillStyle = prediction.color;
             const textWidth = ctx.measureText(prediction.class).width;
             const textHeight = parseInt(font, 10); // base 10
@@ -172,7 +173,7 @@ $(function () {
                 textHeight + 4
             );
         });
-        //previsões
+
         predictions.forEach(function (prediction) {
             const x = prediction.bbox.x;
             const y = prediction.bbox.y;
@@ -202,7 +203,6 @@ $(function () {
 
     var prevTime;
     var pastFrameTimes = [];
-    //captura dos frames em tempo real e exibição do fps
     const detectFrame = function () {
         if (!workerId) return requestAnimationFrame(detectFrame);
 
