@@ -1,14 +1,11 @@
-/*jshint esversion:6*/
-
 $(function () {
+    //Importação dos modulos/bibliotecas necessarios 
     const { InferenceEngine, CVImage } = inferencejs;
     const inferEngine = new InferenceEngine();
-
     const video = $("video")[0];
-
     var workerId;
-    var cameraMode = "environment"; // or "user"
-
+    var cameraMode = "environment"; 
+    //Inicialização da câmera (pedido de permissão)
     const startVideoStreamPromise = navigator.mediaDevices
         .getUserMedia({
             audio: false,
@@ -16,6 +13,7 @@ $(function () {
                 facingMode: cameraMode
             }
         })
+        //Conexão do vídeo da câmera à tela e começa a reproduzi-lo automaticamente.
         .then(function (stream) {
             return new Promise(function (resolve) {
                 video.srcObject = stream;
@@ -25,7 +23,7 @@ $(function () {
                 };
             });
         });
-
+    //Carregar modelo treinado do roboflow
     const loadModelPromise = new Promise(function (resolve, reject) {
         inferEngine
             .startWorker("poluicao-dos-mares", "15", "rf_YgMgiMtPYJPxUsDTSWDvuz9ZRXE3")
@@ -35,54 +33,43 @@ $(function () {
             })
             .catch(reject);
     });
-
+    //Câmera e modelo prontos, inicio do programa 
     Promise.all([startVideoStreamPromise, loadModelPromise]).then(function () {
         $("body").removeClass("loading");
         resizeCanvas();
         detectFrame();
     });
-
+    
+    //Desenho do canvas (necessário para inserir boudingbox e rotulos no video)
     var canvas, ctx;
     const font = "16px sans-serif";
-
+    //Ajuste das dimensões do video (do elemento video no html)
     function videoDimensions(video) {
-        // Ratio of the video's intrinsic dimensions
         var videoRatio = video.videoWidth / video.videoHeight;
-
-        // The width and height of the video element
         var width = video.offsetWidth,
             height = video.offsetHeight;
-
-        // The ratio of the element's width to its height
         var elementRatio = width / height;
-
-        // If the video element is short and wide
+        //Ajuste de proporções do video
         if (elementRatio > videoRatio) {
             width = height * videoRatio;
         } else {
-            // It must be tall and thin, or exactly equal to the original ratio
             height = width / videoRatio;
         }
-
         return {
             width: width,
             height: height
         };
     }
-
     $(window).resize(function () {
         resizeCanvas();
     });
-
+    //Redimensionamento do canvas
     const resizeCanvas = function () {
         $("canvas").remove();
-
         canvas = $("<canvas/>");
-
         ctx = canvas[0].getContext("2d");
-
         var dimensions = videoDimensions(video);
-
+        //Exibir no console as dimensões do video
         console.log(
             video.videoWidth,
             video.videoHeight,
@@ -90,21 +77,20 @@ $(function () {
             video.offsetHeight,
             dimensions
         );
-
+        //Definição da resolução interna do canvas para corresponder exatamente à resolução do vídeo. 
         canvas[0].width = video.videoWidth;
         canvas[0].height = video.videoHeight;
-
+        //CSS do canvas
         canvas.css({
             width: dimensions.width,
             height: dimensions.height,
             left: ($(window).width() - dimensions.width) / 2,
             top: ($(window).height - dimensions.height) / 2
         });
-
         $("body").append(canvas);
     };
 
-    // Function to get specific text for each class
+    // Fução para criar um texto especifico de cada classe do modelo do dataset
     function getClassText(objectClass) {
         const classTextMap = {
             'sacola plastica': 'As sacolas plásticas representam uma parcela significativa dos 3,44 milhões de toneladas de lixo plástico que o Brasil descarta no ambiente anualmente. Esses resíduos ameaçam a vida marinha, causando asfixia e intoxicação em animais como tartarugas e peixes, além de prejudicar a flora aquática ao bloquear a luz solar e comprometer ecossistemas costeiros.',
@@ -126,33 +112,24 @@ $(function () {
         
         return classTextMap[objectClass] || 'Não encontrada ou classe indefinida.';
     }
-
+    //Desenho das detecções 
     const renderPredictions = function (predictions) {
         var scale = 1;
-
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
         // Contador de objetos por classe
         const objectCount = {};
-
+        //Previsões
         predictions.forEach(function (prediction) {
             const x = prediction.bbox.x;
             const y = prediction.bbox.y;
-
             const width = prediction.bbox.width;
             const height = prediction.bbox.height;
-
             // Incrementar o contador da classe
             if (!objectCount[prediction.class]) {
                 objectCount[prediction.class] = 0;
             }
             objectCount[prediction.class] += 1;
-            //EXIBIÇÂO NO CONSOLE ABAIXO
-            console.log(prediction.class, objectCount[prediction.class]);
-           //EXIBIÇÂO NO CONSOLE ACIMA
-
-
-            // Draw the bounding box.
+            // Desenho da bounding box.
             ctx.strokeStyle = prediction.color;
             ctx.lineWidth = 4;
             ctx.strokeRect(
@@ -161,8 +138,7 @@ $(function () {
                 width / scale,
                 height / scale
             );
-
-            // Draw the label background.
+            // Desenho do rótulo.
             ctx.fillStyle = prediction.color;
             const textWidth = ctx.measureText(prediction.class).width;
             const textHeight = parseInt(font, 10); // base 10
@@ -173,7 +149,7 @@ $(function () {
                 textHeight + 4
             );
         });
-
+        //Desenho do texto das previsões (quantidade, classe, confiança da previsão)
         predictions.forEach(function (prediction) {
             const x = prediction.bbox.x;
             const y = prediction.bbox.y;
@@ -181,7 +157,6 @@ $(function () {
             const width = prediction.bbox.width;
             const height = prediction.bbox.height;
 
-            // Draw the text last to ensure it's on top.
             ctx.font = font;
             ctx.textBaseline = "top";
             ctx.fillStyle = "#000000";
@@ -203,9 +178,9 @@ $(function () {
 
     var prevTime;
     var pastFrameTimes = [];
+    //Detecção continua usando a captura de video e o infereEngine
     const detectFrame = function () {
         if (!workerId) return requestAnimationFrame(detectFrame);
-
         const image = new CVImage(video);
         inferEngine
             .infer(workerId, image)
@@ -221,9 +196,6 @@ $(function () {
                     _.each(pastFrameTimes, function (t) {
                         total += t / 1000;
                     });
-
-                    var fps = pastFrameTimes.length / total;
-                    $("#fps").text(Math.round(fps));
                 }
                 prevTime = Date.now();
             })
