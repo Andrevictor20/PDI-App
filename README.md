@@ -44,7 +44,7 @@ O modelo de detecção de objetos foi treinado usando **YOLOv11**, alcançando o
 - 🏆 **Precisão**: **87.4%**
 - 🔄 **Recall**: **83.9%**
 - 📂 **Versão do dataset**: **16**
-- 🆔 **ID do modelo**: `poluicao-dos-mares/16`
+- 🆔 **ID do modelo**: `poluicao-dos-mares/16`, disponível em: https://universe.roboflow.com/pdi-zned5/poluicao-dos-mares
 
 ---
 
